@@ -69,3 +69,6 @@ void
 
 # Package lock (regenerated on install)
 package-lock.json
+
+# HubSpot config file
+hubspot.config.yml
