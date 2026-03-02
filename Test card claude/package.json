@@ -1,0 +1,55 @@
+{
+  "name": "data-quality-score",
+  "version": "1.0.0",
+  "description": "HubSpot UI Extension - Data Quality Score Card pour contacts et companies",
+  "private": true,
+  "scripts": {
+    "start": "hs project dev",
+    "build": "hs project upload",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix"
+  },
+  "dependencies": {
+    "@hubspot/ui-extensions": "^0.12.2",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "@babel/preset-react": "^7.22.15",
+    "@babel/preset-typescript": "^7.23.0",
+    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/react": "^14.0.0",
+    "@types/react": "^18.2.28",
+    "babel-jest": "^29.7.0",
+    "eslint": "^8.51.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
+    },
+    "moduleNameMapper": {
+      "^@hubspot/ui-extensions$": "<rootDir>/src/__mocks__/@hubspot/ui-extensions.js"
+    },
+    "coverageThreshold": {
+      "global": {
+        "lines": 70,
+        "branches": 65,
+        "functions": 70
+      }
+    },
+    "collectCoverageFrom": [
+      "src/domain/**/*.{js,ts}",
+      "src/hooks/**/*.{js,ts}",
+      "!src/**/__mocks__/**"
+    ]
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
