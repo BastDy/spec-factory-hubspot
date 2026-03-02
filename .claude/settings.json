@@ -1,0 +1,85 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "Bash(node tools/*)",
+      "Bash(npm test)",
+      "Bash(npm run *)",
+      "Bash(npx *)",
+      "Task(*)"
+    ],
+    "ask": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(**/secrets/**)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Bash(rm:*)",
+      "Bash(rm -rf:*)",
+      "Bash(rmdir:*)",
+      "Bash(git push:*)",
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(npm install:*)",
+      "Bash(npm publish:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(chmod:*)",
+      "Bash(chown:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "node .claude/hooks/pretooluse-security.js" }]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [{ "type": "command", "command": "node .claude/hooks/pretooluse-security.js" }]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [{ "type": "command", "command": "node .claude/hooks/pretooluse-skill.js" }]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [{ "type": "command", "command": "node .claude/hooks/pretooluse-security.js" }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [{ "type": "command", "command": "node .claude/hooks/posttooluse-validate.js" }]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [{ "type": "command", "command": "node .claude/hooks/posttooluse-validate.js" }]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "",
+        "hooks": [{ "type": "command", "command": "node .claude/hooks/subagentstart-track.js" }]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [{ "type": "command", "command": "node .claude/hooks/stop-gate.js" }]
+      }
+    ]
+  },
+  "env": {
+    "NODE_ENV": "development",
+    "FACTORY_INSTRUMENTATION": "true"
+  }
+}

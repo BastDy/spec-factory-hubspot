@@ -1,0 +1,143 @@
+#!/usr/bin/env node
+/**
+ * PreToolUse Hook - Bloque les commandes dangereuses
+ * Exit code 2 = bloqué
+ *
+ * Also records tool invocations for instrumentation (when enabled)
+ *
+ * Input: JSON via stdin (Claude Code hooks spec)
+ */
+
+import { execSync } from 'child_process';
+import { isEnabled } from '../../tools/instrumentation/config.js';
+
+// Read JSON input from stdin (Claude Code hooks pass data via stdin, not argv)
+function readStdin() {
+  return new Promise((resolve) => {
+    let data = '';
+    process.stdin.setEncoding('utf8');
+    process.stdin.on('readable', () => {
+      let chunk;
+      while ((chunk = process.stdin.read()) !== null) {
+        data += chunk;
+      }
+    });
+    process.stdin.on('end', () => {
+      resolve(data);
+    });
+    // Timeout fallback for non-interactive mode
+    setTimeout(() => resolve(data), 100);
+  });
+}
+
+const stdinData = await readStdin();
+let input = {};
+try {
+  input = JSON.parse(stdinData || '{}');
+} catch (e) {
+  // Malformed stdin — allow tool to proceed
+  console.log(JSON.stringify({ continue: true }));
+  process.exit(0);
+}
+
+// Instrumentation: record tool invocation (opt-in)
+if (isEnabled()) {
+  try {
+    const data = JSON.stringify({
+      tool: input.tool_name,
+      params: input.tool_input,
+      agent: null
+    });
+    execSync(`node tools/instrumentation/collector.js tool "${data.replace(/"/g, '\\"')}"`, {
+      stdio: 'ignore',
+      timeout: 1000
+    });
+
+    // Track template usage when Read tool accesses templates/ directory
+    if (input.tool_name === 'Read' && input.tool_input?.file_path) {
+      const filePath = input.tool_input.file_path.replace(/\\/g, '/');
+      if (filePath.includes('templates/')) {
+        const templateData = JSON.stringify({ template: filePath, agent: null });
+        execSync(`node tools/instrumentation/collector.js template "${templateData.replace(/"/g, '\\"')}"`, {
+          stdio: 'ignore',
+          timeout: 1000
+        });
+      }
+    }
+  } catch (e) { /* silent fail */ }
+}
+
+const BLOCKED_COMMANDS = [
+  /rm\s+-rf\s+\//,
+  /rmdir\s+\/s\s+\/q\s+[A-Z]:\\/i,
+  /curl\s+/,
+  /wget\s+/,
+  /eval\s*\(/,
+  /npm\s+publish/,
+  /git\s+push\s+.*--force/
+];
+
+const BLOCKED_PATHS = [
+  /\.env$/,
+  /\.env\./,
+  /secrets?\//i,
+  /credentials/i,
+  /private.*key/i
+];
+
+function checkBash(command) {
+  for (const pattern of BLOCKED_COMMANDS) {
+    if (pattern.test(command)) {
+      // Structure JSON conforme aux specs Claude Code hooks
+      console.log(JSON.stringify({
+        continue: false,
+        stopReason: `Commande bloquée par politique de sécurité`,
+        hookSpecificOutput: {
+          hookEventName: "PreToolUse",
+          permissionDecision: "deny",
+          permissionDecisionReason: `Pattern dangereux détecté: ${pattern}`,
+          blockedCommand: command.substring(0, 100) // Tronquer pour sécurité
+        }
+      }));
+      process.exit(2);
+    }
+  }
+}
+
+function checkRead(filePath) {
+  for (const pattern of BLOCKED_PATHS) {
+    if (pattern.test(filePath)) {
+      // Structure JSON conforme aux specs Claude Code hooks
+      console.log(JSON.stringify({
+        continue: false,
+        stopReason: `Accès fichier bloqué par politique de sécurité`,
+        hookSpecificOutput: {
+          hookEventName: "PreToolUse",
+          permissionDecision: "deny",
+          permissionDecisionReason: `Fichier sensible: ${pattern}`,
+          blockedPath: filePath
+        }
+      }));
+      process.exit(2);
+    }
+  }
+}
+
+// Main - use tool_name and tool_input (Claude Code hooks spec)
+if (input.tool_name === 'Bash' && input.tool_input?.command) {
+  checkBash(input.tool_input.command);
+}
+
+if (input.tool_name === 'Read' && input.tool_input?.file_path) {
+  checkRead(input.tool_input.file_path);
+}
+
+// Autorisé - structure JSON de confirmation
+console.log(JSON.stringify({
+  continue: true,
+  hookSpecificOutput: {
+    hookEventName: "PreToolUse",
+    permissionDecision: "allow"
+  }
+}));
+process.exit(0);

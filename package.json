@@ -1,0 +1,21 @@
+{
+  "name": "spec-to-code-factory",
+  "version": "1.0.0",
+  "description": "Pipeline Claude Code: requirements.md → projet livrable",
+  "type": "module",
+  "scripts": {
+    "clean": "node tools/clean.js",
+    "gate:check": "node tools/gate-check.js",
+    "test:tools": "node --test tools/__tests__/*.test.js",
+    "validate": "node tools/validate-structure.js",
+    "scan:secrets": "node tools/scan-secrets.js",
+    "verify": "node tools/verify-pipeline.js"
+  },
+  "keywords": [
+    "claude-code",
+    "pipeline",
+    "spec-to-code",
+    "factory"
+  ],
+  "license": "MIT"
+}
