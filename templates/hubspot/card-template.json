@@ -1,0 +1,15 @@
+{
+  "type": "crm-card",
+  "data": {
+    "title": "[TITRE_CARTE]",
+    "location": "crm.record.tab",
+    "module": {
+      "file": "[NomFichier].jsx"
+    },
+    "objectTypes": [
+      {
+        "name": "[contacts|companies|deals|tickets]"
+      }
+    ]
+  }
+}
