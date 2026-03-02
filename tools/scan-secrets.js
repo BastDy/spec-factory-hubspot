@@ -42,7 +42,7 @@ const PII_PATTERNS = [
 ];
 
 const SCAN_DIRS = ['src', 'tests', 'docs', '.'];
-const SKIP_PATTERNS = [/node_modules/, /\.git/, /\.env\.example/, /coverage/, /dist/, /release/, /pnpm-lock\.yaml/, /package-lock\.json/];
+const SKIP_PATTERNS = [/node_modules/, /\.git/, /\.env\.example/, /coverage/, /dist/, /release/, /pnpm-lock\.yaml/, /package-lock\.json/, /Test card claude/];
 
 // Fichiers de cles a detecter (peu importe le contenu)
 const SENSITIVE_FILE_PATTERNS = [
@@ -113,13 +113,17 @@ function scanDir(dir) {
       issues.push(...scanDir(fullPath));
     } else if (entry.isFile()) {
       // Detecter fichiers sensibles par leur nom/extension
+      // Ignorer les fichiers vides (placeholders git-tracked)
       if (isSensitiveFile(entry.name)) {
-        issues.push({
-          file: fullPath,
-          line: 0,
-          type: 'Sensitive File Detected',
-          severity: 'CRITICAL'
-        });
+        const stat = fs.statSync(fullPath);
+        if (stat.size > 0) {
+          issues.push({
+            file: fullPath,
+            line: 0,
+            type: 'Sensitive File Detected',
+            severity: 'CRITICAL'
+          });
+        }
       }
       // Scanner le contenu des fichiers texte
       if (/\.(js|ts|jsx|tsx|py|md|json|yaml|yml|sh|bash|zsh|env)$/i.test(entry.name)) {

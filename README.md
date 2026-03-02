@@ -1,6 +1,4 @@
 <<<<<<< HEAD
-# spec-factory-hubspot
-=======
 # Spec-to-Code Factory
 
 Pipeline Claude Code qui transforme un `requirements.md` en projet livrable.
@@ -174,4 +172,3 @@ Voir `templates/claude-md/CLAUDE-MD-GUIDE.md` pour la documentation complete.
 ## License
 
 MIT
->>>>>>> 43868c5 (Initialisation propre avec GH CLI)
