@@ -9,7 +9,7 @@ import {
   Button,
   Flex,
 } from '@hubspot/ui-extensions';
-import { CrmActionButton } from '@hubspot/ui-extensions/crm';
+// import { CrmActionButton } from '@hubspot/ui-extensions/crm'; // désactivé temporairement
 import { useCompletenessScore } from '../hooks/useCompletenessScore';
 import { useFieldEditor } from '../hooks/useFieldEditor';
 import { useAdminConfig } from '../hooks/useAdminConfig';
@@ -181,18 +181,7 @@ export function DataQualityCard({ context, actions, properties, error, settingsA
 
       <Divider />
 
-      {/* CTA: open record editor — commenté temporairement pour debug */}
-      {/* {!isComplete && (
-        <CrmActionButton
-          actionType="OPEN_RECORD"
-          actionContext={{
-            objectTypeId: objectType,
-            objectId: objectId,
-          }}
-        >
-          Compléter les champs
-        </CrmActionButton>
-      )} */}
+      {/* CTA: désactivé temporairement */}
 
       {/* Refresh button — always visible */}
       <RefreshButton onRefresh={handleRefresh} />

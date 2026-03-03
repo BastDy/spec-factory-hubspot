@@ -2,45 +2,28 @@ import { hubspot, Text } from '@hubspot/ui-extensions';
 import { DataQualityCard } from '@data-quality-helper/components';
 import { useState, useEffect } from 'react';
 
-const PROPERTIES_BY_TYPE = {
-  '0-1': ['firstname', 'lastname', 'email', 'phone', 'lifecyclestage'],
-  '0-2': ['name', 'domain', 'phone', 'country', 'industry'],
-};
+const CONTACT_FIELDS = ['firstname', 'lastname', 'email', 'phone', 'lifecyclestage'];
 
-function DataQualityCardEntry({ context, actions }) {
-  const objectTypeId = context?.crm?.objectTypeId;
-  const fields = PROPERTIES_BY_TYPE[objectTypeId] || [];
-  const [properties, setProperties] = useState(null);
-  const [fetchError, setFetchError] = useState(null);
+function Extension({ context, actions }) {
+  const [props, setProps] = useState(null);
 
   useEffect(() => {
-    if (!objectTypeId || !fields.length) return;
-    actions.fetchCrmObjectProperties(fields)
-      .then((data) => setProperties(data))
-      .catch(() => {
-        setFetchError('Impossible de charger les données CRM.');
-        setProperties({});
-      });
-  }, [objectTypeId]);
+    actions.fetchCrmObjectProperties(CONTACT_FIELDS).then(setProps);
+  }, []);
 
-  if (properties === null && !fetchError) {
-    return <Text>Chargement...</Text>;
-  }
+  if (!props) return <Text>Chargement...</Text>;
 
   return (
     <DataQualityCard
       context={context}
       actions={actions}
-      properties={properties || {}}
-      error={fetchError}
-      settingsApi={actions?.settingsApi}
+      properties={props}
+      error={null}
+      settingsApi={null}
     />
   );
 }
 
-hubspot.extend((props) => (
-  <DataQualityCardEntry
-    context={props.context}
-    actions={props.actions}
-  />
+hubspot.extend(({ context, actions }) => (
+  <Extension context={context} actions={actions} />
 ));
