@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@data-quality-helper/components": "1.0.0",
-    "@hubspot/ui-extensions": "^0.12.2",
+    "@hubspot/ui-extensions": "latest",
     "react": "^18.2.0"
   }
 }

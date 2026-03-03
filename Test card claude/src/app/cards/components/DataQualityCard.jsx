@@ -124,6 +124,9 @@ export function DataQualityCard({ context, actions, properties, error, settingsA
 
   return (
     <Flex direction="column" gap="small">
+      {/* DEBUG temporaire */}
+      <Text>objectType: {objectType} | objectId: {String(objectId)} | score: {score}</Text>
+
       {/* Header with optional admin gear button */}
       <Flex direction="row" justify="between" align="center">
         <Text format={{ fontWeight: 'demibold' }}>
@@ -178,8 +181,8 @@ export function DataQualityCard({ context, actions, properties, error, settingsA
 
       <Divider />
 
-      {/* CTA: open record editor — always shown alongside inline editing (D6) */}
-      {!isComplete && (
+      {/* CTA: open record editor — commenté temporairement pour debug */}
+      {/* {!isComplete && (
         <CrmActionButton
           actionType="OPEN_RECORD"
           actionContext={{
@@ -189,7 +192,7 @@ export function DataQualityCard({ context, actions, properties, error, settingsA
         >
           Compléter les champs
         </CrmActionButton>
-      )}
+      )} */}
 
       {/* Refresh button — always visible */}
       <RefreshButton onRefresh={handleRefresh} />
