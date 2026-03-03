@@ -1,0 +1,10 @@
+{
+  "name": "data-quality-card",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@data-quality-helper/components": "1.0.0",
+    "@hubspot/ui-extensions": "^0.12.2",
+    "react": "^18.2.0"
+  }
+}

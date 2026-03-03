@@ -1,0 +1,10 @@
+{
+  "uid": "data_quality_card_companies",
+  "type": "card",
+  "config": {
+    "name": "Data Quality Score Companies",
+    "entrypoint": "app/cards/data-quality-card.jsx",
+    "location": "crm.record.tab",
+    "objectTypes": ["companies"]
+  }
+}

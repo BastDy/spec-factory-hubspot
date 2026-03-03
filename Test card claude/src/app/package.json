@@ -1,0 +1,4 @@
+{
+  "name": "data-quality-helper",
+  "workspaces": ["cards", "packages/*"]
+}

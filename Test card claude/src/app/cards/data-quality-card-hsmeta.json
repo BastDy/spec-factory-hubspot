@@ -1,0 +1,10 @@
+{
+  "uid": "data_quality_card_contacts",
+  "type": "card",
+  "config": {
+    "name": "Data Quality Score",
+    "entrypoint": "app/cards/data-quality-card.jsx",
+    "location": "crm.record.tab",
+    "objectTypes": ["contacts"]
+  }
+}
