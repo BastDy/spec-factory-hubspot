@@ -57,15 +57,23 @@ export function DataQualityCard({ context, actions, properties, error, runServer
   const { config: adminConfig, isSaving: isSavingConfig, error: configError, saveConfig, resetConfig } =
     useAdminConfig();
 
+  const OBJECT_TYPE_MAP = {
+    'contacts': 'contacts',
+    'companies': 'companies',
+    '0-1': 'contacts',
+    '0-2': 'companies',
+  };
+  const normalizedType = OBJECT_TYPE_MAP[objectType] || null;
+  const isValidType = !!normalizedType;
+
   const configuredFields = adminConfig
-    ? (objectType === 'contacts' ? adminConfig.contacts : adminConfig.companies)
+    ? (normalizedType === 'contacts' ? adminConfig.contacts : adminConfig.companies)
     : null;
 
   // Rules of Hooks: useCompletenessScore must be called unconditionally.
   // Pass null objectType/properties when in error state — hook handles it gracefully.
-  const isValidType = objectType === 'contacts' || objectType === 'companies';
   const { score, color, missingFields, isComplete, totalFields } = useCompletenessScore(
-    isValidType ? objectType : 'contacts',
+    normalizedType || 'contacts',
     properties || {},
     configuredFields
   );
@@ -77,11 +85,11 @@ export function DataQualityCard({ context, actions, properties, error, runServer
   // V2: Callback when a field is saved successfully
   const handleFieldSaved = useCallback((fieldName) => {
     setModificationHistory((prev) => {
-      const newEntry = { fieldName, timestamp: Date.now(), objectType };
+      const newEntry = { fieldName, timestamp: Date.now(), objectType: normalizedType };
       const updated = [newEntry, ...prev].slice(0, MAX_HISTORY_ENTRIES);
       return updated;
     });
-  }, [objectType]);
+  }, [normalizedType]);
 
   // Error state: properties not loaded
   if (!properties) {
@@ -111,10 +119,10 @@ export function DataQualityCard({ context, actions, properties, error, runServer
     );
   }
 
-  const objectLabel = objectType === 'contacts' ? 'Contact' : 'Company';
+  const objectLabel = normalizedType === 'contacts' ? 'Contact' : 'Company';
 
   // All tracked fields (configured or default) for EditableFieldRow display
-  const trackedFields = configuredFields || FIELD_CONFIG[objectType] || [];
+  const trackedFields = configuredFields || FIELD_CONFIG[normalizedType] || [];
 
   return (
     <Flex direction="column" gap="small">
@@ -155,7 +163,7 @@ export function DataQualityCard({ context, actions, properties, error, runServer
                 key={fieldName}
                 fieldName={fieldName}
                 properties={properties}
-                objectType={objectType}
+                objectType={normalizedType}
                 objectId={objectId}
                 color={color}
                 missingFields={missingFields}
@@ -198,7 +206,7 @@ export function DataQualityCard({ context, actions, properties, error, runServer
           onSave={saveConfig}
           onReset={resetConfig}
           onClose={() => setConfigModalOpen(false)}
-          objectType={objectType}
+          objectType={normalizedType}
         />
       )}
     </Flex>
