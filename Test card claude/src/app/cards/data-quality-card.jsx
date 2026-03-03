@@ -1,29 +1,29 @@
 import { hubspot, Text, Flex, Divider } from '@hubspot/ui-extensions';
+import { DataQualityCard } from './components/DataQualityCard';
 import { useState, useEffect } from 'react';
 
 const CONTACT_FIELDS = ['firstname', 'lastname', 'email', 'phone', 'lifecyclestage'];
+const COMPANY_FIELDS = ['name', 'domain', 'phone', 'country', 'industry'];
 
 function Extension({ context, actions }) {
-  const [props, setProps] = useState(null);
+  const [properties, setProperties] = useState(null);
+  const objectTypeId = context?.crm?.objectTypeId;
+  const fields = objectTypeId === '0-2' ? COMPANY_FIELDS : CONTACT_FIELDS;
 
   useEffect(() => {
-    actions.fetchCrmObjectProperties(CONTACT_FIELDS).then(setProps);
+    actions.fetchCrmObjectProperties(fields).then(setProperties);
   }, []);
 
-  if (!props) return <Text>Chargement...</Text>;
-
-  const objectTypeId = context?.crm?.objectTypeId;
-  const isAdmin = context?.user?.roleType === 'ADMIN';
+  if (!properties) return <Text>Chargement...</Text>;
 
   return (
-    <Flex direction="column" gap="small">
-      <Text format={{ fontWeight: 'demibold' }}>Data Quality Score</Text>
-      <Text>objectTypeId: {objectTypeId} | isAdmin: {String(isAdmin)}</Text>
-      <Divider />
-      {CONTACT_FIELDS.map((f) => (
-        <Text key={f}>{f}: {props[f] || '—'}</Text>
-      ))}
-    </Flex>
+    <DataQualityCard
+      context={context}
+      actions={actions}
+      properties={properties}
+      error={null}
+      settingsApi={null}
+    />
   );
 }
 
