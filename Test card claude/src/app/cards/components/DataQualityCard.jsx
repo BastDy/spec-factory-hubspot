@@ -43,7 +43,7 @@ const MAX_HISTORY_ENTRIES = 3;
  * @param {Function} runServerlessFunction - HubSpot SDK for calling serverless functions
  */
 export function DataQualityCard({ context, actions, properties, error, settingsApi, runServerlessFunction }) {
-  const objectType = context?.crm?.objectType;
+  const objectType = context?.crm?.objectTypeId;
   const objectId = context?.crm?.objectId;
   const isAdmin = context?.user?.roleType === 'ADMIN';
 
