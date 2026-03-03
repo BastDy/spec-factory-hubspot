@@ -5,22 +5,6 @@
     "name": "Data Quality Score Companies",
     "entrypoint": "app/cards/data-quality-card.jsx",
     "location": "crm.record.tab",
-    "objectTypes": ["companies"],
-    "propertiesRequested": [
-      "name",
-      "domain",
-      "phone",
-      "city",
-      "country",
-      "industry",
-      "numberofemployees",
-      "hubspot_owner_id"
-    ],
-    "contextRequested": [
-      "user.roleType",
-      "user.id",
-      "crm.objectId",
-      "crm.objectType"
-    ]
+    "objectTypes": ["companies"]
   }
 }

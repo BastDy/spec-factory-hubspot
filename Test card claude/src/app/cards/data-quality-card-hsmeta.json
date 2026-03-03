@@ -5,22 +5,6 @@
     "name": "Data Quality Score",
     "entrypoint": "app/cards/data-quality-card.jsx",
     "location": "crm.record.tab",
-    "objectTypes": ["contacts"],
-    "propertiesRequested": [
-      "firstname",
-      "lastname",
-      "email",
-      "phone",
-      "company",
-      "jobtitle",
-      "lifecyclestage",
-      "hubspot_owner_id"
-    ],
-    "contextRequested": [
-      "user.roleType",
-      "user.id",
-      "crm.objectId",
-      "crm.objectType"
-    ]
+    "objectTypes": ["contacts"]
   }
 }
