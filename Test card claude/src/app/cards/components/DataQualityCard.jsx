@@ -42,7 +42,7 @@ const MAX_HISTORY_ENTRIES = 3;
  * @param {object} properties - CRM properties map from SDK
  * @param {Function} runServerlessFunction - HubSpot SDK for calling serverless functions
  */
-export function DataQualityCard({ context, actions, properties, error, isLoading, settingsApi, runServerlessFunction }) {
+export function DataQualityCard({ context, actions, properties, error, settingsApi, runServerlessFunction }) {
   const objectType = context?.crm?.objectType;
   const objectId = context?.crm?.objectId;
   const isAdmin = context?.user?.roleType === 'ADMIN';
@@ -64,7 +64,6 @@ export function DataQualityCard({ context, actions, properties, error, isLoading
     '0-2': 'companies',
   };
   const normalizedType = OBJECT_TYPE_MAP[objectType] || null;
-  const isContextLoading = objectType === undefined || objectType === null || objectType === '';
   const isValidType = !!normalizedType;
 
   const configuredFields = adminConfig
@@ -92,38 +91,14 @@ export function DataQualityCard({ context, actions, properties, error, isLoading
     });
   }, [normalizedType]);
 
-  // Loading state: properties not yet available
-  if (isLoading || (!properties && !error)) {
-    return (
-      <Flex direction="column" gap="small">
-        <Text format={{ fontWeight: 'demibold' }}>Data Quality Score</Text>
-        <Divider />
-        <Text>Chargement des données...</Text>
-      </Flex>
-    );
-  }
-
   // Error state: properties failed to load
-  if (!properties) {
+  if (error) {
     return (
       <Flex direction="column" gap="small">
         <Text format={{ fontWeight: 'demibold' }}>Data Quality Score</Text>
         <Divider />
-        <Alert variant="warning">
-          {error || 'Données non disponibles. Impossible de charger les propriétés CRM.'}
-        </Alert>
+        <Alert variant="warning">{error}</Alert>
         <RefreshButton onRefresh={handleRefresh} />
-      </Flex>
-    );
-  }
-
-  // Contexte pas encore chargé → attendre
-  if (isContextLoading) {
-    return (
-      <Flex direction="column" gap="small">
-        <Text format={{ fontWeight: 'demibold' }}>Data Quality Score</Text>
-        <Divider />
-        <Text>Chargement...</Text>
       </Flex>
     );
   }

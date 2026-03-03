@@ -1,6 +1,6 @@
 // V2: Entry point for the Data Quality Score HubSpot UI Extension
 
-import { hubspot } from '@hubspot/ui-extensions';
+import { hubspot, Text } from '@hubspot/ui-extensions';
 import { useCrmProperties } from '@hubspot/ui-extensions/crm';
 import { DataQualityCard } from '@data-quality-helper/components';
 
@@ -32,13 +32,18 @@ const ALL_PROPERTIES = [
 
 function DataQualityCardEntry({ context, actions, settingsApi }) {
   const { properties, isLoading, error } = useCrmProperties(ALL_PROPERTIES);
+  const objectType = context?.crm?.objectType;
+
+  // Attendre que les propriétés ET le contexte soient prêts
+  if (isLoading || !objectType) {
+    return <Text>Chargement des données...</Text>;
+  }
 
   return (
     <DataQualityCard
       context={context}
       actions={actions}
-      properties={isLoading ? null : (properties || {})}
-      isLoading={isLoading}
+      properties={properties || {}}
       error={error ? 'Impossible de charger les données CRM.' : null}
       settingsApi={settingsApi}
     />
