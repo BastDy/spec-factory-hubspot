@@ -1,4 +1,4 @@
-import { Text, Flex } from '@hubspot/ui-extensions';
+import { DescriptionList, DescriptionListItem, Text } from '@hubspot/ui-extensions';
 import { FIELD_DISPLAY_NAMES } from '../domain/constants';
 
 export function EditableFieldRow({ fieldName, currentValue }) {
@@ -6,11 +6,8 @@ export function EditableFieldRow({ fieldName, currentValue }) {
   const isEmpty = !currentValue;
 
   return (
-    <Flex direction="row" justify="between" align="center" gap="small">
-      <Text format={{ fontWeight: 'demibold' }}>{label}</Text>
-      <Text>
-        {isEmpty ? '🔴 (vide)' : `🟢 ${currentValue}`}
-      </Text>
-    </Flex>
+    <DescriptionListItem label={label}>
+      <Text>{isEmpty ? '🔴 (vide)' : `🟢 ${currentValue}`}</Text>
+    </DescriptionListItem>
   );
 }

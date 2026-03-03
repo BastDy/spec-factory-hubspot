@@ -8,9 +8,12 @@ import {
   Alert,
   Button,
   Flex,
+  DescriptionList,
+  DescriptionListItem,
 } from '@hubspot/ui-extensions';
-// import { CrmActionButton } from '@hubspot/ui-extensions/crm'; // désactivé temporairement
+import { CrmActionButton } from '@hubspot/ui-extensions/crm';
 import { useCompletenessScore } from '../hooks/useCompletenessScore';
+import { useFieldEditor } from '../hooks/useFieldEditor';
 import { useAdminConfig } from '../hooks/useAdminConfig';
 import { ProgressBar } from './ProgressBar';
 import { RefreshButton } from './RefreshButton';
@@ -148,19 +151,20 @@ export function DataQualityCard({ context, actions, properties, error, settingsA
 
       {/* V2: All tracked fields with inline editing */}
       {isComplete ? (
-        <Flex direction="column" gap="extra-small">
-          <Text format={{ fontWeight: 'demibold' }}>✓ Fiche complète</Text>
-        </Flex>
+        <Text format={{ fontWeight: 'demibold' }}>✓ Fiche complète</Text>
       ) : (
-        <Flex direction="column" gap="extra-small">
-          {trackedFields.map((fieldName) => (
-            <EditableFieldRow
-              key={fieldName}
-              fieldName={fieldName}
-              currentValue={properties[fieldName] ?? null}
-            />
-          ))}
-        </Flex>
+        <DescriptionList direction="row">
+          {trackedFields.map((fieldName) => {
+            const value = properties[fieldName] ?? null;
+            const isEmpty = !value;
+            const label = FIELD_DISPLAY_NAMES[fieldName] || fieldName;
+            return (
+              <DescriptionListItem key={fieldName} label={label}>
+                <Text>{isEmpty ? '🔴 (vide)' : `🟢 ${value}`}</Text>
+              </DescriptionListItem>
+            );
+          })}
+        </DescriptionList>
       )}
 
       {/* V2: Modification history (max 3 entries) */}
@@ -168,7 +172,18 @@ export function DataQualityCard({ context, actions, properties, error, settingsA
 
       <Divider />
 
-      {/* CTA: désactivé temporairement */}
+      {/* CTA: open record editor — always shown alongside inline editing (D6) */}
+      {!isComplete && (
+        <CrmActionButton
+          actionType="OPEN_RECORD"
+          actionContext={{
+            objectTypeId: objectType,
+            objectId: objectId,
+          }}
+        >
+          Compléter les champs
+        </CrmActionButton>
+      )}
 
       {/* Refresh button — always visible */}
       <RefreshButton onRefresh={handleRefresh} />
@@ -190,3 +205,84 @@ export function DataQualityCard({ context, actions, properties, error, settingsA
   );
 }
 
+/**
+ * FieldEditorWrapper — Renders one EditableFieldRow with its own useFieldEditor instance.
+ * This pattern allows each field to have independent editing state.
+ */
+function FieldEditorWrapper({
+  fieldName,
+  properties,
+  objectType,
+  objectId,
+  color,
+  missingFields,
+  onSaveSuccess,
+  runServerlessFunction,
+}) {
+  const initialValue = properties[fieldName] ?? null;
+
+  // Detect field type from property name conventions
+  const fieldType = detectFieldType(fieldName);
+
+  // V2: saveFn wraps the HubSpot SDK CRM update call
+  const saveFn = runServerlessFunction
+    ? async (objType, objId, fname, value) => {
+        // Pattern: hubspot.crm.[contacts|companies].update via SDK
+        // In real deployment, this uses the HubSpot SDK CRM write methods.
+        // For now we use runServerlessFunction as the injection point.
+        await runServerlessFunction(`crm.${objType}.update`, {
+          objectId: objId,
+          properties: { [fname]: value },
+        });
+      }
+    : undefined;
+
+  const {
+    currentValue,
+    isEditing,
+    status,
+    errorMessage,
+    startEditing,
+    cancelEditing,
+    updateValue,
+    saveField,
+  } = useFieldEditor({
+    fieldName,
+    initialValue,
+    fieldType,
+    objectType,
+    objectId,
+    onSaveSuccess,
+    saveFn,
+  });
+
+  return (
+    <EditableFieldRow
+      fieldName={fieldName}
+      currentValue={isEditing ? currentValue : (properties[fieldName] ?? null)}
+      fieldType={fieldType}
+      isEditing={isEditing}
+      status={status}
+      errorMessage={errorMessage}
+      scoreColor={missingFields.includes(fieldName) ? color : 'green'}
+      onStartEditing={startEditing}
+      onCancelEditing={cancelEditing}
+      onUpdateValue={updateValue}
+      onSave={saveField}
+    />
+  );
+}
+
+/**
+ * Detects the field type for HubSpot standard fields.
+ * Returns 'text' for unknown fields.
+ */
+function detectFieldType(fieldName) {
+  const typeMap = {
+    lifecyclestage: 'select',
+    industry: 'select',
+    country: 'select',
+    hubspot_owner_id: 'owner',
+  };
+  return typeMap[fieldName] || 'text';
+}
