@@ -5,22 +5,27 @@
 export const SCORE_GREEN_THRESHOLD = 80;
 export const SCORE_ORANGE_THRESHOLD = 50;
 
-// Critical fields configuration by object type
+// Critical fields configuration by object type — valeurs par défaut.
+// Modifiables par l'admin via le panneau de configuration (roue crantée).
 export const FIELD_CONFIG: Record<'contacts' | 'companies', string[]> = {
   contacts: [
     'firstname',
     'lastname',
     'email',
     'phone',
+    'company',
+    'jobtitle',
     'lifecyclestage',
     'hubspot_owner_id',
   ],
   companies: [
     'name',
     'domain',
-    'industry',
     'phone',
+    'city',
     'country',
+    'industry',
+    'numberofemployees',
     'hubspot_owner_id',
   ],
 };
@@ -31,12 +36,31 @@ export const FIELD_DISPLAY_NAMES: Record<string, string> = {
   lastname: 'Nom',
   email: 'Email',
   phone: 'Téléphone',
+  company: 'Entreprise',
+  jobtitle: 'Poste',
   lifecyclestage: 'Lifecycle Stage',
   hubspot_owner_id: 'Propriétaire',
   name: 'Nom',
   domain: 'Domaine',
-  industry: 'Industrie',
+  city: 'Ville',
   country: 'Pays',
+  industry: 'Industrie',
+  numberofemployees: 'Nb employés',
+  // Propriétés supplémentaires configurables
+  mobilephone: 'Mobile',
+  website: 'Site web',
+  address: 'Adresse',
+  state: 'Région',
+  zip: 'Code postal',
+  hs_lead_status: 'Statut lead',
+  num_contacted_notes: 'Nb contacts',
+  notes_last_contacted: 'Dernier contact',
+  description: 'Description',
+  annualrevenue: 'CA annuel',
+  linkedin_company_page: 'LinkedIn',
+  twitterhandle: 'Twitter',
+  founded_year: 'Année création',
+  total_money_raised: 'Fonds levés',
 };
 
 // V2: Settings API keys for admin config

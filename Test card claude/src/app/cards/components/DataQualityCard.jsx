@@ -42,7 +42,7 @@ const MAX_HISTORY_ENTRIES = 3;
  * @param {object} properties - CRM properties map from SDK
  * @param {Function} runServerlessFunction - HubSpot SDK for calling serverless functions
  */
-export function DataQualityCard({ context, actions, properties, error, runServerlessFunction }) {
+export function DataQualityCard({ context, actions, properties, error, isLoading, settingsApi, runServerlessFunction }) {
   const objectType = context?.crm?.objectType;
   const objectId = context?.crm?.objectId;
   const isAdmin = context?.user?.roleType === 'ADMIN';
@@ -55,7 +55,7 @@ export function DataQualityCard({ context, actions, properties, error, runServer
 
   // V2: Admin config hook
   const { config: adminConfig, isSaving: isSavingConfig, error: configError, saveConfig, resetConfig } =
-    useAdminConfig();
+    useAdminConfig(settingsApi);
 
   const OBJECT_TYPE_MAP = {
     'contacts': 'contacts',
@@ -64,6 +64,7 @@ export function DataQualityCard({ context, actions, properties, error, runServer
     '0-2': 'companies',
   };
   const normalizedType = OBJECT_TYPE_MAP[objectType] || null;
+  const isContextLoading = objectType === undefined || objectType === null || objectType === '';
   const isValidType = !!normalizedType;
 
   const configuredFields = adminConfig
@@ -91,7 +92,18 @@ export function DataQualityCard({ context, actions, properties, error, runServer
     });
   }, [normalizedType]);
 
-  // Error state: properties not loaded
+  // Loading state: properties not yet available
+  if (isLoading || (!properties && !error)) {
+    return (
+      <Flex direction="column" gap="small">
+        <Text format={{ fontWeight: 'demibold' }}>Data Quality Score</Text>
+        <Divider />
+        <Text>Chargement des données...</Text>
+      </Flex>
+    );
+  }
+
+  // Error state: properties failed to load
   if (!properties) {
     return (
       <Flex direction="column" gap="small">
@@ -105,14 +117,25 @@ export function DataQualityCard({ context, actions, properties, error, runServer
     );
   }
 
-  // Error state: unknown object type
+  // Contexte pas encore chargé → attendre
+  if (isContextLoading) {
+    return (
+      <Flex direction="column" gap="small">
+        <Text format={{ fontWeight: 'demibold' }}>Data Quality Score</Text>
+        <Divider />
+        <Text>Chargement...</Text>
+      </Flex>
+    );
+  }
+
+  // Contexte chargé mais type non supporté → erreur
   if (!isValidType) {
     return (
       <Flex direction="column" gap="small">
         <Text format={{ fontWeight: 'demibold' }}>Data Quality Score</Text>
         <Divider />
         <Alert variant="warning">
-          Type d'objet non supporté. Seuls contacts et companies sont pris en charge.
+          Type d'objet non supporté: "{objectType}". Seuls contacts et companies sont pris en charge.
         </Alert>
         <RefreshButton onRefresh={handleRefresh} />
       </Flex>
