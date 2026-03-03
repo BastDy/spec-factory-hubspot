@@ -11,7 +11,6 @@ import {
 } from '@hubspot/ui-extensions';
 // import { CrmActionButton } from '@hubspot/ui-extensions/crm'; // désactivé temporairement
 import { useCompletenessScore } from '../hooks/useCompletenessScore';
-import { useFieldEditor } from '../hooks/useFieldEditor';
 import { useAdminConfig } from '../hooks/useAdminConfig';
 import { ProgressBar } from './ProgressBar';
 import { RefreshButton } from './RefreshButton';
@@ -124,9 +123,6 @@ export function DataQualityCard({ context, actions, properties, error, settingsA
 
   return (
     <Flex direction="column" gap="small">
-      {/* DEBUG temporaire */}
-      <Text>objectType: {objectType} | objectId: {String(objectId)} | score: {score}</Text>
-
       {/* Header with optional admin gear button */}
       <Flex direction="row" justify="between" align="center">
         <Text format={{ fontWeight: 'demibold' }}>
@@ -157,22 +153,13 @@ export function DataQualityCard({ context, actions, properties, error, settingsA
         </Flex>
       ) : (
         <Flex direction="column" gap="extra-small">
-          {trackedFields.map((fieldName) => {
-            // Each field gets its own editor instance
-            return (
-              <FieldEditorWrapper
-                key={fieldName}
-                fieldName={fieldName}
-                properties={properties}
-                objectType={normalizedType}
-                objectId={objectId}
-                color={color}
-                missingFields={missingFields}
-                onSaveSuccess={handleFieldSaved}
-                runServerlessFunction={runServerlessFunction}
-              />
-            );
-          })}
+          {trackedFields.map((fieldName) => (
+            <EditableFieldRow
+              key={fieldName}
+              fieldName={fieldName}
+              currentValue={properties[fieldName] ?? null}
+            />
+          ))}
         </Flex>
       )}
 
@@ -203,84 +190,3 @@ export function DataQualityCard({ context, actions, properties, error, settingsA
   );
 }
 
-/**
- * FieldEditorWrapper — Renders one EditableFieldRow with its own useFieldEditor instance.
- * This pattern allows each field to have independent editing state.
- */
-function FieldEditorWrapper({
-  fieldName,
-  properties,
-  objectType,
-  objectId,
-  color,
-  missingFields,
-  onSaveSuccess,
-  runServerlessFunction,
-}) {
-  const initialValue = properties[fieldName] ?? null;
-
-  // Detect field type from property name conventions
-  const fieldType = detectFieldType(fieldName);
-
-  // V2: saveFn wraps the HubSpot SDK CRM update call
-  const saveFn = runServerlessFunction
-    ? async (objType, objId, fname, value) => {
-        // Pattern: hubspot.crm.[contacts|companies].update via SDK
-        // In real deployment, this uses the HubSpot SDK CRM write methods.
-        // For now we use runServerlessFunction as the injection point.
-        await runServerlessFunction(`crm.${objType}.update`, {
-          objectId: objId,
-          properties: { [fname]: value },
-        });
-      }
-    : undefined;
-
-  const {
-    currentValue,
-    isEditing,
-    status,
-    errorMessage,
-    startEditing,
-    cancelEditing,
-    updateValue,
-    saveField,
-  } = useFieldEditor({
-    fieldName,
-    initialValue,
-    fieldType,
-    objectType,
-    objectId,
-    onSaveSuccess,
-    saveFn,
-  });
-
-  return (
-    <EditableFieldRow
-      fieldName={fieldName}
-      currentValue={isEditing ? currentValue : (properties[fieldName] ?? null)}
-      fieldType={fieldType}
-      isEditing={isEditing}
-      status={status}
-      errorMessage={errorMessage}
-      scoreColor={missingFields.includes(fieldName) ? color : 'green'}
-      onStartEditing={startEditing}
-      onCancelEditing={cancelEditing}
-      onUpdateValue={updateValue}
-      onSave={saveField}
-    />
-  );
-}
-
-/**
- * Detects the field type for HubSpot standard fields.
- * Returns 'text' for unknown fields.
- */
-function detectFieldType(fieldName) {
-  const typeMap = {
-    lifecyclestage: 'select',
-    industry: 'select',
-    country: 'select',
-    hubspot_owner_id: 'owner',
-  };
-  return typeMap[fieldName] || 'text';
-}
