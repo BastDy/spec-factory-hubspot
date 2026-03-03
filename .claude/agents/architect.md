@@ -82,4 +82,3 @@ Quand une version SUPPRIME un composant, hook ou type :
 - **SUPPRIMER physiquement** la section obsolete du fichier
 - **NE PAS** utiliser `~~strikethrough~~` ni `SUPPRIME VN`
 - L'historique git conserve la traçabilite
-

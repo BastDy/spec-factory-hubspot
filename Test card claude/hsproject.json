@@ -1,5 +1,1 @@
-{
-  "name": "Test card claude",
-  "srcDir": "src",
-  "platformVersion": "2025.2"
-}
+{"name":"Test card claude","platformVersion":"2025.2","srcDir":"src"}
