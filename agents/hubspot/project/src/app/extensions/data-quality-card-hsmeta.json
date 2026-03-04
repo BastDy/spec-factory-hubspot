@@ -1,0 +1,15 @@
+{
+  "type": "crm-card",
+  "data": {
+    "title": "Data Quality Score",
+    "location": "crm.record.tab",
+    "module": {
+      "file": "data-quality-card.jsx"
+    },
+    "objectTypes": [
+      {
+        "name": "contacts"
+      }
+    ]
+  }
+}

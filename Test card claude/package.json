@@ -34,7 +34,8 @@
       "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
     },
     "moduleNameMapper": {
-      "^@hubspot/ui-extensions$": "<rootDir>/src/__mocks__/@hubspot/ui-extensions.js"
+      "^@hubspot/ui-extensions$": "<rootDir>/src/__mocks__/hubspot/ui-extensions.js",
+      "^@hubspot/ui-extensions/crm$": "<rootDir>/src/__mocks__/hubspot/ui-extensions-crm.js"
     },
     "coverageThreshold": {
       "global": {

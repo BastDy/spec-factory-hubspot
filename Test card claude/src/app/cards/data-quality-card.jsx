@@ -1,29 +1,61 @@
-import { hubspot, Text, Flex, Divider } from '@hubspot/ui-extensions';
-import { DataQualityCard } from './components/DataQualityCard';
-import { useState, useEffect } from 'react';
+import { hubspot, Text, Flex, Divider, Button, Alert, ProgressBar } from '@hubspot/ui-extensions';
+import { CrmPropertyList } from '@hubspot/ui-extensions/crm';
 
-const CONTACT_FIELDS = ['firstname', 'lastname', 'email', 'phone', 'lifecyclestage'];
-const COMPANY_FIELDS = ['name', 'domain', 'phone', 'country', 'industry'];
+const CONTACT_FIELDS = [
+  'firstname',
+  'lastname',
+  'email',
+  'phone',
+  'company',
+  'jobtitle',
+  'lifecyclestage',
+  'hubspot_owner_id'
+];
+
+function useCompletenessScore(properties) {
+  const filled = CONTACT_FIELDS.filter(
+    (field) => properties[field] !== null && properties[field] !== undefined && properties[field] !== ''
+  ).length;
+  const total = CONTACT_FIELDS.length;
+  const percent = Math.round((filled / total) * 100);
+
+  let emoji;
+  if (percent < 50) {
+    emoji = '🔴';
+  } else if (percent <= 80) {
+    emoji = '🟡';
+  } else {
+    emoji = '🟢';
+  }
+
+  return { filled, total, percent, emoji };
+}
 
 function Extension({ context, actions }) {
-  const [properties, setProperties] = useState(null);
-  const objectTypeId = context?.crm?.objectTypeId;
-  const fields = objectTypeId === '0-2' ? COMPANY_FIELDS : CONTACT_FIELDS;
+  const properties = context?.crm?.properties || {};
+  const score = useCompletenessScore(properties);
 
-  useEffect(() => {
-    actions.fetchCrmObjectProperties(fields).then(setProperties);
-  }, []);
-
-  if (!properties) return <Text>Chargement...</Text>;
+  function handleRefresh() {
+    actions.refreshObjectProperties();
+  }
 
   return (
-    <DataQualityCard
-      context={context}
-      actions={actions}
-      properties={properties}
-      error={null}
-      settingsApi={null}
-    />
+    <Flex direction="column">
+      <ProgressBar value={score.percent} />
+      <Text>{score.emoji} {score.filled}/{score.total}</Text>
+      <Divider />
+      {CONTACT_FIELDS.length === 0 && (
+        <Alert title="Propriété non supportée" type="error">
+          Aucune propriété disponible à afficher.
+        </Alert>
+      )}
+      <CrmPropertyList
+        properties={CONTACT_FIELDS}
+        direction="row"
+        objectTypeId="0-1"
+      />
+      <Button onClick={handleRefresh}>Rafraîchir</Button>
+    </Flex>
   );
 }
 

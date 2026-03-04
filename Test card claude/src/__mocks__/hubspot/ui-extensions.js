@@ -127,6 +127,11 @@ const ModalBody = ({ children }) =>
 const ModalFooter = ({ children }) =>
   React.createElement('div', { 'data-testid': 'modal-footer' }, children);
 
+// ---- ProgressBar ----
+
+const ProgressBar = ({ value }) =>
+  React.createElement('div', { 'data-testid': 'hs-progress-bar', 'data-value': String(value) });
+
 // ---- Tag (used in the original card) ----
 
 const Tag = ({ children, variant }) =>
@@ -142,6 +147,7 @@ module.exports = {
   CrmActionButton,
   Flex,
   LoadingSpinner,
+  ProgressBar,
   Input,
   Select,
   NumberInput,
