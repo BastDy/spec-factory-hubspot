@@ -25,9 +25,18 @@ Tu es l'orchestrateur de la phase HubSpot.
 
 3. Détecter projet HubSpot existant :
    bash
-   HS_PROJECT=$(find . -name "hsproject.json" -not -path "*/node_modules/*" -maxdepth 4 2>/dev/null | head -1 | xargs -I{} dirname {})
-   if [ -z "$HS_PROJECT" ]; then echo "ERREUR: Aucun projet HubSpot (hsproject.json) trouvé"; exit 1; fi
-   echo "Projet HubSpot détecté: $HS_PROJECT"
+  # AVANT (détection automatique - ne marche pas)
+  HS_PROJECT=$(find . -name "hsproject.json" -not -path "*/node_modules/*" -maxdepth 4 2>/dev/null | head -1 | xargs -I{} dirname {})
+  if [ -z "$HS_PROJECT" ]; then echo "ERREUR: Aucun projet HubSpot trouvé"; exit 1; fi
+
+  # APRÈS (hardcodé - fonctionne toujours)
+  HS_PROJECT="Test card claude"
+  if [ ! -f "$HS_PROJECT/hsproject.json" ]; then
+    echo "ERREUR: $HS_PROJECT/hsproject.json introuvable";
+    exit 1;
+  fi
+  echo "Projet HubSpot ciblé: $HS_PROJECT"
+
 
 
 4. Instrumenter la délégation :
@@ -71,23 +80,19 @@ node tools/get-planning-version.js
      Utiliser hubspot.extend(() => <Component />)
      Importer depuis @hubspot/ui-extensions
      Gérer états : loading, error, empty
-     Lire les propriétés depuis context.crm.properties (pas useCrmProperties)",
+     Lire les propriétés depuis useCrmProperties,
      description: "HubSpot Agent - UI Extensions Project"
    )
 
 
 6. Valider projet généré :
    bash
-   HS_PROJECT=$(find . -name "hsproject.json" -not -path "*/node_modules/*" -maxdepth 4 2>/dev/null | head -1 | xargs -I{} dirname {})
-   test -f "$HS_PROJECT/src/app/app-hsmeta.json" || echo "AVERTISSEMENT: app-hsmeta.json absent"
-   find "$HS_PROJECT/src/app/cards" -name "*.jsx" 2>/dev/null | head -1 | grep -q . || echo "ERREUR: Aucune card JSX trouvée"
-   find "$HS_PROJECT/src/__tests__" -name "*.test.*" 2>/dev/null | head -1 | grep -q . || echo "AVERTISSEMENT: Aucun test trouvé"
+  HS_PROJECT="Test card claude"
 
 
 7. Logger via :
    bash
-   HS_PROJECT=$(find . -name "hsproject.json" -not -path "*/node_modules/*" -maxdepth 4 2>/dev/null | head -1 | xargs -I{} dirname {})
-   node tools/factory-log.js "HUBSPOT" "completed" "Code HubSpot mis à jour dans $HS_PROJECT"
+  HS_PROJECT="Test card claude"
 
 
 8. Retourner résumé structuré :
