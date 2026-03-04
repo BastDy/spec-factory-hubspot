@@ -1,5 +1,6 @@
 import { hubspot, Text, Flex, Divider, Button, Alert, ProgressBar } from '@hubspot/ui-extensions';
 import { CrmPropertyList } from '@hubspot/ui-extensions/crm';
+import { useCrmProperties } from '@hubspot/ui-extensions/crm';
 
 const CONTACT_FIELDS = [
   'firstname',
@@ -31,9 +32,9 @@ function useCompletenessScore(properties) {
   return { filled, total, percent, emoji };
 }
 
-function Extension({ context, actions }) {
-  const properties = context?.crm?.properties || {};
-  const score = useCompletenessScore(properties);
+function Extension({ actions }) {
+  const { properties, isLoading } = useCrmProperties(CONTACT_FIELDS);
+  const score = useCompletenessScore(properties || {});
 
   function handleRefresh() {
     actions.refreshObjectProperties();
