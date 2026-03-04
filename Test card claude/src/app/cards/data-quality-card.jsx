@@ -1,5 +1,5 @@
 import { hubspot, Text, Flex, Divider, Button, Alert, ProgressBar } from '@hubspot/ui-extensions';
-import { CrmPropertyList } from '@hubspot/ui-extensions/crm';
+import { CrmPropertyList, useCrmProperties } from '@hubspot/ui-extensions/crm';
 
 const CONTACT_FIELDS = [
   'firstname',
@@ -13,9 +13,13 @@ const CONTACT_FIELDS = [
 ];
 
 function useCompletenessScore(properties) {
-  const filled = CONTACT_FIELDS.filter(
-    (field) => properties[field] !== null && properties[field] !== undefined && properties[field] !== ''
-  ).length;
+  const filled = CONTACT_FIELDS.filter((field) => {
+    const value = properties[field];
+    if (value === null || value === undefined || value === '') return false;
+    // Bug fix V4 : phone avec seulement préfixe pays = vide
+    if (field === 'phone' && /^\+\d{1,3}$/.test(String(value).trim())) return false;
+    return true;
+  }).length;
   const total = CONTACT_FIELDS.length;
   const percent = Math.round((filled / total) * 100);
 
@@ -31,9 +35,9 @@ function useCompletenessScore(properties) {
   return { filled, total, percent, emoji };
 }
 
-function Extension({ context, actions }) {
-  const properties = context?.crm?.properties || {};
-  const score = useCompletenessScore(properties);
+function Extension({ actions }) {
+  const { properties } = useCrmProperties(CONTACT_FIELDS);
+  const score = useCompletenessScore(properties || {});
 
   function handleRefresh() {
     actions.refreshObjectProperties();
@@ -59,6 +63,6 @@ function Extension({ context, actions }) {
   );
 }
 
-hubspot.extend(({ context, actions }) => (
-  <Extension context={context} actions={actions} />
+hubspot.extend(({ actions }) => (
+  <Extension actions={actions} />
 ));
