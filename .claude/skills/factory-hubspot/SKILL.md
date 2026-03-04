@@ -32,6 +32,10 @@ Tu es l'orchestrateur de la phase HubSpot.
 4. Instrumenter la délégation :
    bash
    node tools/instrumentation/collector.js agent '{"agent":"hubspot","source":"factory-hubspot"}'
+   # Obtenir le répertoire planning actif
+node tools/get-planning-version.js
+   # → passer le résultat dans le prompt de l'agent hubspot
+
 
 
 5. Déléguer à l'agent hubspot via Task tool :
@@ -44,6 +48,16 @@ Tu es l'orchestrateur de la phase HubSpot.
      - docs/specs/system.md
      - docs/specs/domain.md
      - docs/specs/api.md
+
+     Lis ensuite le planning généré par factory-plan :
+      - node tools/get-planning-version.js  → pour obtenir le répertoire actif
+      - docs/planning/vN/epics.md           → liste des épics
+      - docs/planning/vN/us/US-*.md        → user stories
+      - docs/planning/vN/tasks/TASK-.md   → tasks (priorité, DoD, contexte)
+
+      IMPORTANT : Le code généré doit couvrir TOUTES les tasks du planning.
+      Chaque TASK-*.md définit un composant ou une fonctionnalité à implémenter.
+
 
      Utilise les templates :
      - templates/hubspot/README-template.md

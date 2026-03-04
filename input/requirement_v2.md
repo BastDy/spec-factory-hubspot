@@ -198,7 +198,7 @@ Documentation :
 │ [████████░░░░] 4/6 champs           │
 │                                     │
 │ Champs :                            │
-│ ✓ Email : bh@hubspot.com            │
+│ ✓ Email : contact@example.com       │
 │ ✓ Company : HubSpot                 │
 │ ✗ Phone : [__________] 💾           │
 │ ✗ Owner : [Select...▼] 💾           │

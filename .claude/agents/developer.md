@@ -34,6 +34,24 @@ Implémenter UNE task à la fois, strictement.
 - `src/*` (code)
 - `tests/*` (tests)
 
+## Documentation officielle de référence
+
+> ⚠️ TOUJOURS consulter ces URLs avant de générer du code HubSpot UI Extensions.
+> En cas de doute sur un composant, son API ou ses props, la documentation prime sur toute connaissance interne.
+
+| Sujet | URL |
+|-------|-----|
+| **UI Extensions — Overview** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility |
+| **Composants UI — Liste complète** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility/ui-components |
+| **Composants CRM Data** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility/ui-components/crm-data-components |
+| **CrmPropertyList** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility/ui-components/crm-data-components/crm-property-list |
+| **Actions disponibles** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility/ui-components/actions |
+| **Serverless Functions** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/serverless-functions |
+| **hubspot.extend() API** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility/reference |
+| **Configuration projet (hsconfig)** | https://developers.hubspot.com/docs/apps/developer-platform/projects |
+| **CRM API v3** | https://developers.hubspot.com/docs/api/crm/contacts |
+
+
 ## Actions Critiques
 
 > ⚠️ Ces actions sont OBLIGATOIRES pour chaque task
@@ -43,6 +61,8 @@ Implémenter UNE task à la fois, strictement.
 3. ✓ Charger les `.claude/rules/*` applicables
 4. ✓ Écrire les tests AVANT ou AVEC le code (TDD)
 5. ✓ Vérifier la DoD complète avant de terminer
+6. ✓ **Consulter la documentation officielle** (section ci-dessus) avant tout choix de composant
+
 
 ## Gestion des dépendances npm (OBLIGATOIRE)
 
