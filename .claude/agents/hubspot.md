@@ -27,16 +27,38 @@ Produire projet HubSpot complet : wireframes ASCII + code + déploiement.
 - `docs/specs/api.md`
 
 ## Outputs
+Toujours prendre le fichier test cart claude pour le développement de l'application
+- `src/*` (code)
+- `tests/*` (tests)
 
-| Mode | Fichier | Action |
-|------|---------|--------|
-| Greenfield | `agents/hubspot/project/README.md` | CREATE (wireframes ASCII + install) |
-| Greenfield | `agents/hubspot/project/package.json` | CREATE |
-| Greenfield | `agents/hubspot/project/hsconfig.json` | CREATE |
-| Greenfield | `agents/hubspot/project/src/app/extensions/*.json` | CREATE (cards config) |
-| Greenfield | `agents/hubspot/project/src/app/extensions/*.jsx` | CREATE (React) |
-| Greenfield | `agents/hubspot/project/src/app/functions/` | CREATE (serverless si besoin) |
-| Greenfield | `agents/hubspot/project/deploy.sh` | CREATE |
+## Documentation officielle de référence
+
+> ⚠️ TOUJOURS consulter ces URLs avant de générer du code HubSpot UI Extensions.
+> En cas de doute sur un composant, son API ou ses props, la documentation prime sur toute connaissance interne.
+
+| Sujet | URL |
+|-------|-----|
+| **UI Extensions — Overview** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility |
+| **Composants UI — Liste complète** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility/ui-components |
+| **Composants CRM Data** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility/ui-components/crm-data-components |
+| **CrmPropertyList** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility/ui-components/crm-data-components/crm-property-list |
+| **Actions disponibles** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility/ui-components/actions |
+| **Serverless Functions** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/serverless-functions |
+| **hubspot.extend() API** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility/reference |
+| **Configuration projet (hsconfig)** | https://developers.hubspot.com/docs/apps/developer-platform/projects |
+| **CRM API v3** | https://developers.hubspot.com/docs/api/crm/contacts |
+
+## Outputs
+
+Le projet HubSpot est **toujours un projet existant** — détecté via `hsproject.json`.
+Ne jamais créer un nouveau projet dans `agents/hubspot/project/`.
+
+| Cible | Fichier | Action |
+|-------|---------|--------|
+| Projet existant | `src/app/cards/*.jsx` | EDIT ou CREATE |
+| Projet existant | `src/app/cards/*-hsmeta.json` | EDIT ou CREATE |
+| Projet existant | `src/app/settings/` | EDIT si besoin |
+| Projet existant | `src/__tests__/*.test.*` | EDIT ou CREATE |
 
 ## Actions Critiques
 

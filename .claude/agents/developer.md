@@ -30,27 +30,6 @@ Implémenter UNE task à la fois, strictement.
 > **NE PAS charger les fichiers specs** (`docs/specs/*`, `docs/brief.md`, `docs/scope.md`, `docs/acceptance.md`).
 > La task contient déjà les règles pertinentes dans la section "Règles métier applicables" — pas besoin d'ouvrir les fichiers originaux.
 
-## Outputs
-- `src/*` (code)
-- `tests/*` (tests)
-
-## Documentation officielle de référence
-
-> ⚠️ TOUJOURS consulter ces URLs avant de générer du code HubSpot UI Extensions.
-> En cas de doute sur un composant, son API ou ses props, la documentation prime sur toute connaissance interne.
-
-| Sujet | URL |
-|-------|-----|
-| **UI Extensions — Overview** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility |
-| **Composants UI — Liste complète** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility/ui-components |
-| **Composants CRM Data** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility/ui-components/crm-data-components |
-| **CrmPropertyList** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility/ui-components/crm-data-components/crm-property-list |
-| **Actions disponibles** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility/ui-components/actions |
-| **Serverless Functions** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/serverless-functions |
-| **hubspot.extend() API** | https://developers.hubspot.com/docs/apps/developer-platform/add-features/ui-extensibility/reference |
-| **Configuration projet (hsconfig)** | https://developers.hubspot.com/docs/apps/developer-platform/projects |
-| **CRM API v3** | https://developers.hubspot.com/docs/api/crm/contacts |
-
 
 ## Actions Critiques
 

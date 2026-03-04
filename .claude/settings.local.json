@@ -16,7 +16,8 @@
       "WebFetch(domain:docs.claude.com)",
       "WebFetch(domain:www.adamblackington.com)",
       "Bash(test:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npm test:*)"
     ]
   }
 }

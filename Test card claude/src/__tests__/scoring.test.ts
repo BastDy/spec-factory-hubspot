@@ -119,13 +119,15 @@ describe('getMissingFields', () => {
   describe('contacts (using FIELD_CONFIG.contacts)', () => {
     const contactFields = FIELD_CONFIG.contacts;
 
-    it('returns all 6 fields when properties is empty', () => {
+    it('returns all 8 fields when properties is empty', () => {
       const missing = getMissingFields(contactFields, {});
-      expect(missing).toHaveLength(6);
+      expect(missing).toHaveLength(8);
       expect(missing).toContain('firstname');
       expect(missing).toContain('lastname');
       expect(missing).toContain('email');
       expect(missing).toContain('phone');
+      expect(missing).toContain('company');
+      expect(missing).toContain('jobtitle');
       expect(missing).toContain('lifecyclestage');
       expect(missing).toContain('hubspot_owner_id');
     });
@@ -136,6 +138,8 @@ describe('getMissingFields', () => {
         lastname: 'Dupont',
         email: 'jean@example.com',
         phone: '+33612345678',
+        company: 'Acme',
+        jobtitle: 'Manager',
         lifecyclestage: 'customer',
         hubspot_owner_id: '12345',
       };
@@ -148,6 +152,8 @@ describe('getMissingFields', () => {
         lastname: 'Dupont',
         email: 'jean@example.com',
         phone: null,
+        company: 'Acme',
+        jobtitle: 'Manager',
         lifecyclestage: 'customer',
         hubspot_owner_id: '12345',
       };
@@ -173,14 +179,16 @@ describe('getMissingFields', () => {
   describe('companies (using FIELD_CONFIG.companies)', () => {
     const companyFields = FIELD_CONFIG.companies;
 
-    it('returns all 6 fields when properties is empty', () => {
+    it('returns all 8 fields when properties is empty', () => {
       const missing = getMissingFields(companyFields, {});
-      expect(missing).toHaveLength(6);
+      expect(missing).toHaveLength(8);
       expect(missing).toContain('name');
       expect(missing).toContain('domain');
       expect(missing).toContain('industry');
       expect(missing).toContain('phone');
+      expect(missing).toContain('city');
       expect(missing).toContain('country');
+      expect(missing).toContain('numberofemployees');
       expect(missing).toContain('hubspot_owner_id');
     });
 
@@ -190,7 +198,9 @@ describe('getMissingFields', () => {
         domain: 'acme.com',
         industry: 'TECHNOLOGY',
         phone: '+33123456789',
+        city: 'Paris',
         country: 'France',
+        numberofemployees: '100',
         hubspot_owner_id: '99999',
       };
       expect(getMissingFields(companyFields, props)).toHaveLength(0);

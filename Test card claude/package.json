@@ -34,6 +34,9 @@
       "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
     },
     "moduleNameMapper": {
+      "^react$": "<rootDir>/node_modules/react",
+      "^react-dom$": "<rootDir>/node_modules/react-dom",
+      "^react-dom/(.*)$": "<rootDir>/node_modules/react-dom/$1",
       "^@hubspot/ui-extensions$": "<rootDir>/src/__mocks__/hubspot/ui-extensions.js",
       "^@hubspot/ui-extensions/crm$": "<rootDir>/src/__mocks__/hubspot/ui-extensions-crm.js"
     },

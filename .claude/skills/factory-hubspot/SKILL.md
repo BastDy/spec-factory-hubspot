@@ -23,10 +23,11 @@ Tu es l'orchestrateur de la phase HubSpot.
    - Si status === "FAIL" → STOP immédiat.
    - Terminer avec : GATE_FAIL|2|<résumé erreurs>|0
 
-3. Créer structure projet :
+3. Détecter projet HubSpot existant :
    bash
-   mkdir -p agents/hubspot/project/src/app/extensions
-   mkdir -p agents/hubspot/project/src/app/functions
+   HS_PROJECT=$(find . -name "hsproject.json" -not -path "*/node_modules/*" -maxdepth 4 2>/dev/null | head -1 | xargs -I{} dirname {})
+   if [ -z "$HS_PROJECT" ]; then echo "ERREUR: Aucun projet HubSpot (hsproject.json) trouvé"; exit 1; fi
+   echo "Projet HubSpot détecté: $HS_PROJECT"
 
 
 4. Instrumenter la délégation :
@@ -42,72 +43,62 @@ node tools/get-planning-version.js
 
    Task(
      subagent_type: "hubspot",
-     prompt: "Génère projet HubSpot UI Extensions complet.
+     prompt: "Travaille dans le projet HubSpot existant détecté.
 
-     Lis d'abord :
+     IMPORTANT : Le projet HubSpot EXISTE DÉJÀ. Ne crée pas de nouveau projet.
+     Le répertoire du projet est celui contenant hsproject.json (ex: 'Test card claude/').
+
+     Lis d'abord les specs :
      - docs/specs/system.md
      - docs/specs/domain.md
      - docs/specs/api.md
 
-     Lis ensuite le planning généré par factory-plan :
+     Lis ensuite le planning :
       - node tools/get-planning-version.js  → pour obtenir le répertoire actif
       - docs/planning/vN/epics.md           → liste des épics
       - docs/planning/vN/us/US-*.md        → user stories
       - docs/planning/vN/tasks/TASK-.md   → tasks (priorité, DoD, contexte)
 
-      IMPORTANT : Le code généré doit couvrir TOUTES les tasks du planning.
-      Chaque TASK-*.md définit un composant ou une fonctionnalité à implémenter.
-
+     IMPORTANT : Le code généré doit couvrir TOUTES les tasks du planning.
+     Chaque TASK-*.md définit un composant ou une fonctionnalité à implémenter.
 
      Utilise les templates :
      - templates/hubspot/README-template.md
      - templates/hubspot/card-template.json
      - templates/hubspot/component-template.jsx
 
-     Génère dans agents/hubspot/project/ :
-     - README.md (wireframes ASCII)
-     - package.json (@hubspot/ui-extensions)
-     - hsconfig.json
-     - src/app/extensions/*.json et *.jsx
-     - src/app/functions/*.js (si API externe)
-     - deploy.sh
-
-     IMPORTANT - Wireframes ASCII obligatoires dans README :
-     Format box-drawing (┌─┐│└┘)
-     Montrer layout exact, données CRM, boutons
-
      IMPORTANT - React component :
      Utiliser hubspot.extend(() => <Component />)
      Importer depuis @hubspot/ui-extensions
-     Gérer états : loading, error, empty",
+     Gérer états : loading, error, empty
+     Lire les propriétés depuis context.crm.properties (pas useCrmProperties)",
      description: "HubSpot Agent - UI Extensions Project"
    )
 
 
 6. Valider projet généré :
    bash
-   test -f agents/hubspot/project/README.md || echo "ERREUR: README manquant"
-   test -f agents/hubspot/project/package.json || echo "ERREUR: package.json manquant"
-   grep -q "@hubspot/ui-extensions" agents/hubspot/project/package.json || echo "ERREUR: SDK manquant"
-   grep -q "┌" agents/hubspot/project/README.md || echo "AVERTISSEMENT: Wireframe ASCII absent"
+   HS_PROJECT=$(find . -name "hsproject.json" -not -path "*/node_modules/*" -maxdepth 4 2>/dev/null | head -1 | xargs -I{} dirname {})
+   test -f "$HS_PROJECT/src/app/app-hsmeta.json" || echo "AVERTISSEMENT: app-hsmeta.json absent"
+   find "$HS_PROJECT/src/app/cards" -name "*.jsx" 2>/dev/null | head -1 | grep -q . || echo "ERREUR: Aucune card JSX trouvée"
+   find "$HS_PROJECT/src/__tests__" -name "*.test.*" 2>/dev/null | head -1 | grep -q . || echo "AVERTISSEMENT: Aucun test trouvé"
 
 
 7. Logger via :
    bash
-   node tools/factory-log.js "HUBSPOT" "completed" "Projet HubSpot généré dans agents/hubspot/project/"
+   HS_PROJECT=$(find . -name "hsproject.json" -not -path "*/node_modules/*" -maxdepth 4 2>/dev/null | head -1 | xargs -I{} dirname {})
+   node tools/factory-log.js "HUBSPOT" "completed" "Code HubSpot mis à jour dans $HS_PROJECT"
 
 
 8. Retourner résumé structuré :
 
-   ✓ Projet HubSpot généré : agents/hubspot/project/
-   ✓ Wireframes ASCII : README.md
-   ✓ Cartes CRM : src/app/extensions/
-   ✓ Serverless : src/app/functions/ (si applicable)
+   ✓ Projet HubSpot mis à jour dans : [chemin détecté via hsproject.json]
+   ✓ Cards CRM : src/app/cards/
+   ✓ Tests : src/__tests__/
 
    Prochaines étapes :
-   cd agents/hubspot/project
-   npm install
-   hs init
+   cd [projet]
+   npm test
    hs project dev
 
 
@@ -120,9 +111,9 @@ node tools/get-planning-version.js
 ## Auto-remédiation
 
 Tentative 1 : Corriger erreurs détectées
-- README manquant → Relancer hubspot avec prompt : "Génère README.md avec wireframes ASCII"
-- package.json manquant → Relancer hubspot avec prompt : "Génère package.json avec @hubspot/ui-extensions"
-- Extensions manquantes → Relancer hubspot avec prompt : "Génère extensions/*.json et *.jsx"
+- Cards manquantes → Relancer hubspot avec prompt : "Génère les cards JSX manquantes dans src/app/cards/"
+- Tests manquants → Relancer hubspot avec prompt : "Génère les tests dans src/__tests__/"
+- hsmeta manquant → Relancer hubspot avec prompt : "Génère les fichiers *-hsmeta.json"
 
 Tentative 2 : Relancer agent complet
 - Relancer Task hubspot entier
