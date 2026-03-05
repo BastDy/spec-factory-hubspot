@@ -13,13 +13,9 @@ const CONTACT_FIELDS = [
 ];
 
 function useCompletenessScore(properties) {
-  const filled = CONTACT_FIELDS.filter((field) => {
-    const value = properties[field];
-    if (value === null || value === undefined || value === '') return false;
-    // Bug fix V4 : phone avec seulement préfixe pays = vide
-    if (field === 'phone' && /^\+\d{1,3}$/.test(String(value).trim())) return false;
-    return true;
-  }).length;
+  const filled = CONTACT_FIELDS.filter(
+    (field) => properties[field] !== null && properties[field] !== undefined && properties[field] !== ''
+  ).length;
   const total = CONTACT_FIELDS.length;
   const percent = Math.round((filled / total) * 100);
 
@@ -48,11 +44,6 @@ function Extension({ actions }) {
       <ProgressBar value={score.percent} />
       <Text>{score.emoji} {score.filled}/{score.total}</Text>
       <Divider />
-      {CONTACT_FIELDS.length === 0 && (
-        <Alert title="Propriété non supportée" type="error">
-          Aucune propriété disponible à afficher.
-        </Alert>
-      )}
       <CrmPropertyList
         properties={CONTACT_FIELDS}
         direction="row"
