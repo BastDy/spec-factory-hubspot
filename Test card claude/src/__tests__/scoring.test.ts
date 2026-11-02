@@ -44,6 +44,17 @@ describe('isFieldEmpty', () => {
   it('returns false for "false" string (not empty)', () => {
     expect(isFieldEmpty('false')).toBe(false);
   });
+
+  it('returns true for a bare country code (HubSpot pre-filled phone)', () => {
+    expect(isFieldEmpty('+33')).toBe(true);
+    expect(isFieldEmpty('+1')).toBe(true);
+    expect(isFieldEmpty(' +44 ')).toBe(true);
+  });
+
+  it('returns false for a full phone number with country code', () => {
+    expect(isFieldEmpty('+33612345678')).toBe(false);
+    expect(isFieldEmpty('+1 416 555 0100')).toBe(false);
+  });
 });
 
 describe('computeScore', () => {
@@ -173,6 +184,21 @@ describe('getMissingFields', () => {
       };
       const missing = getMissingFields(contactFields, props);
       expect(missing).toContain('hubspot_owner_id');
+    });
+
+    it('detects phone as missing when it only holds a country code', () => {
+      const props = {
+        firstname: 'Jean',
+        lastname: 'Dupont',
+        email: 'jean@example.com',
+        phone: '+33',
+        company: 'Acme',
+        jobtitle: 'Manager',
+        lifecyclestage: 'customer',
+        hubspot_owner_id: '12345',
+      };
+      const missing = getMissingFields(contactFields, props);
+      expect(missing).toEqual(['phone']);
     });
   });
 

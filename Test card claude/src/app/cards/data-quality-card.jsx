@@ -1,5 +1,6 @@
 import { hubspot, Text, Flex, Divider, Button, Alert, ProgressBar } from '@hubspot/ui-extensions';
 import { CrmPropertyList, useCrmProperties } from '@hubspot/ui-extensions/crm';
+import { isFieldEmpty } from './domain/scoring';
 
 const CONTACT_FIELDS = [
   'firstname',
@@ -13,9 +14,7 @@ const CONTACT_FIELDS = [
 ];
 
 function useCompletenessScore(properties) {
-  const filled = CONTACT_FIELDS.filter(
-    (field) => properties[field] !== null && properties[field] !== undefined && properties[field] !== ''
-  ).length;
+  const filled = CONTACT_FIELDS.filter((field) => !isFieldEmpty(properties[field])).length;
   const total = CONTACT_FIELDS.length;
   const percent = Math.round((filled / total) * 100);
 

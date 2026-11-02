@@ -12,10 +12,13 @@ import type { ObjectType, ScoreColor } from './types';
  * - empty string ""
  * - "0" (hubspot_owner_id with no assigned owner)
  * - string composed only of whitespace
+ * - bare country code ("+33", "+1"), which HubSpot injects into empty phone fields
  */
 export function isFieldEmpty(value: string | null | undefined): boolean {
   if (value === null || value === undefined) return true;
   if (value === '0') return true;
+  // HubSpot pre-fills phone fields with a bare country code (e.g. "+33") even when no number was entered
+  if (/^\+\d{1,3}$/.test(value.trim())) return true;
   return value.trim() === '';
 }
 
